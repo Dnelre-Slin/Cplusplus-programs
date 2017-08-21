@@ -65,7 +65,42 @@ void clearInput(std::istringstream &is)
 	is.ignore(INT_MAX, '\n');
 }
 
-double runCalc(int start_priority, std::vector<int> &iInputString, std::vector<double> &dNumber, std::vector<Operators> &operators, int &index, bool start_params_set = false,
+double runCalc(int start_priority, std::vector<int> &iInputString, std::vector<double> &dNumber, std::vector<Operators> &operators, int &index)
+{
+	double ans = 0;
+	while (index < iInputString.size())
+	{
+		if (iInputString[index] == MyConsts::paranthesis_start)
+		{
+			ans = runCalc(-1, iInputString, dNumber, operators, ++index);
+			index++;
+		}
+		else if (iInputString[index] == MyConsts::parantesis_end)
+		{
+			return ans;
+		}
+		else if (iInputString[index] >= 0) //Is a number.
+		{
+			ans = dNumber[iInputString[index]];
+			index++;
+		}
+		else if (iInputString[index] <= operators[0].getKey() && iInputString[index] >= operators[operators.size() - 1].getKey()) //Is an operator.
+		{
+			Operators op = operators[-(iInputString[index] + 1 + MyConsts::number_of_consts)];
+			if (op.getNextPriority() > start_priority)
+			{
+				ans = op.doOperation(ans, runCalc(op.getPriority(), iInputString, dNumber, operators, ++index));
+			}
+			else
+			{
+				return ans;
+			}
+		}
+	}
+	return ans;
+}
+
+double runCalc3(int start_priority, std::vector<int> &iInputString, std::vector<double> &dNumber, std::vector<Operators> &operators, int &index, bool start_params_set = false,
 	double start_value = 0, Operators start_operator = Operators())
 {
 	//std::cout << "Start of Func\n";
@@ -76,7 +111,9 @@ double runCalc(int start_priority, std::vector<int> &iInputString, std::vector<d
 		if (iInputString[index] == MyConsts::paranthesis_start)
 		{
 			//std::cout << "If 1\n";
+			std::cout << "( : " << ans << " is lost!!\n";
 			ans = runCalc(-1, iInputString, dNumber, operators, ++index);
+			index++;
 			std::cout << "( : " << ans << '\n';
 		}
 		else if (iInputString[index] == MyConsts::parantesis_end)
@@ -86,13 +123,14 @@ double runCalc(int start_priority, std::vector<int> &iInputString, std::vector<d
 			//{
 			//	index++;
 			//}
-			index++;
+			//index++;
 			std::cout << ") : " << ans << '\n';
 			return ans;
 		}
 		else if (iInputString[index] >= 0) //Is a number.
 		{
 			//std::cout << "If 3\n";
+			std::cout << "(Is nr): " << ans << " is lost!!\n";
 			ans = dNumber[iInputString[index]];
 			index++;
 		}
@@ -110,6 +148,7 @@ double runCalc(int start_priority, std::vector<int> &iInputString, std::vector<d
 			else
 			{
 				//std::cout << "If 41\n";
+				std::cout << "(Operator return): " << ans << '\n';
 				return ans;
 			}
 		}
@@ -179,7 +218,7 @@ double runCalc2(int start_priority, std::vector<int> &iInputString, std::vector<
 			{
 				Operators nextOp = operators[-(iInputString[index + 1] + 1 + MyConsts::number_of_consts)];
 				index += 2;
-				nr = runCalc(priority, iInputString, dNumber, operators, index, true, nr, nextOp);
+				nr = runCalc2(priority, iInputString, dNumber, operators, index, true, nr, nextOp);
 			}
 			
 			ans = op.doOperation(ans, nr);
@@ -220,7 +259,7 @@ void insertMissingAddOperators(std::vector<int> &iInputString)
 void checkForLegalSymbol(std::istringstream &is, std::vector<int> &iInputString)
 {
 	is.clear();
-	std::string legalChars = "()+-*/";
+	std::string legalChars = "()+-*/%^";
 	char c;
 	is >> c;
 	for (int i = 0; i < legalChars.length(); i++)
@@ -235,8 +274,105 @@ void checkForLegalSymbol(std::istringstream &is, std::vector<int> &iInputString)
 	clearInput(is);
 }
 
-void runTest2(std::string &sInputString)
+int getKeyOfOperator(char c, std::string &legalChars)
 {
+	for (int i = 2; i < legalChars.length(); i++)
+	{
+		if (c == legalChars[i])
+		{
+			return -(i + 1);
+		}
+	}
+	return 0; // If c is not a legal operator.
+}
+
+//  Gets all consecutive + and -, that are not considered operators, but signs, and reduces it to nothing, if sign is positive, or a "-1*" sentence in iInput if negative.
+bool isSign(std::istringstream &istream, std::vector<int> &iInput, std::vector<double> &dNumbers)
+{
+	char c = istream.peek();
+	if (c == '+' || c == '-')
+	{
+		bool is_positive = true;
+		while (c == '+' || c == '-') {
+			if (c == '-') {
+				is_positive = !is_positive; //Swap between positive and negative, everytime minus sign shows up
+			}
+			istream >> c;
+			c = istream.peek();
+		}
+		if (!is_positive)
+		{
+			dNumbers.push_back(-1);
+			iInput.push_back(dNumbers.size() - 1);
+			iInput.push_back(-5); // -5 == '*'.
+		}
+		return true;
+	}
+	return false;
+}
+
+bool isNumber(std::istringstream &istream, std::vector<int> &iInput, std::vector<double> &dNumbers)
+{
+	//istream.putback(c); //Put back, to check if c and the following chars makes a number.
+	double d;
+	istream >> d;
+	if (istream.fail()) //Not a number.
+	{
+		istream.clear(); //Clear failbit.
+		return false;
+	}
+	dNumbers.push_back(d); //Puts number in double vector.
+	iInput.push_back(dNumbers.size() - 1); //And index to that number in int vector.
+	return true;
+}
+
+bool handleInputString(std::istringstream &istream, std::vector<int> &iInput, std::vector<double> &dNumbers, std::string &legalChars)
+{
+	char c;
+	int op_key = 0;
+	iInput.push_back(-1); //Auto-place first start parantesis.
+	while (istream.rdbuf()->in_avail() > 0)
+	{
+		c = istream.peek();
+		if (c == '(')
+		{
+			if (iInput.back() >= 0 || iInput.back() == -2) // Is a number or an end parantesis. (Factorial should also be here).
+			{
+				iInput.push_back(-5); // -5 = '*'.
+			}
+			iInput.push_back(-1); // -1 = '('.
+			istream >> c;
+		}
+		else if (c == ')' && (iInput.back() >= 0)) //Last element is a number. (Factorial should also be here).
+		{
+			iInput.push_back(-2); // -2 = ')'.
+			istream >> c;
+		}
+		//else if (c == '!') //If c is factorial symbol.
+		//{
+		//	//
+		//}
+		else if (((op_key = getKeyOfOperator(c, legalChars)) != 0) && (!((iInput.back() <= -3 && iInput.back() >= -8) || (iInput.back() == -1)))) // If is operator and back is not operator or (.
+		{// If c is an operator and back() is not an operator and not a '('. (Functions should also be here).
+			iInput.push_back(op_key);
+			istream >> c;
+		}
+		else if (isSign(istream, iInput, dNumbers) /* || isLetter() */ || isNumber(istream, iInput, dNumbers))
+		{
+			//No need for body. Everything handled in isSign, isLetter and isNumber functions.
+		}
+		else // If it makes it this far, there must be a syntax error, since all possible legal options should be covered in the if's.
+		{
+			return false; //Syntax error.
+		}
+	}
+	iInput.push_back(-2); //Auto-place last end parantesis.
+	return true; //No syntax errors. Math string parsed successfully.
+}
+
+void runTest2(std::string &iString)
+{
+	std::string legalChars = "()+-*/%^";
 	int key = -1 - MyConsts::number_of_consts;
 	std::vector<Operators> operators;
 	operators.push_back(Operators(key--, 0, add));
@@ -246,34 +382,55 @@ void runTest2(std::string &sInputString)
 	operators.push_back(Operators(key--, 1, mod));
 	operators.push_back(Operators(key--, 2, pow, 1));
 
-	std::vector<int> iInputString;
+	std::istringstream istream(iString);
+	std::vector<int> iInput;
 	std::vector<double> dNumbers;
-	sInputString = "(" + sInputString + ")";
-	std::istringstream is(sInputString);
-	double d1;
-	while (is.rdbuf()->in_avail() > 0)
-	{
-		is >> d1;
-		if (is.fail())
-		{
-			checkForLegalSymbol(is, iInputString);
-		}
-		else
-		{
-			dNumbers.push_back(d1);
-			iInputString.push_back(dNumbers.size() - 1);
-		}
-	}
-	insertMissingAddOperators(iInputString);
-	int index = 1;
-	double answer = runCalc(-1, iInputString, dNumbers, operators, index);
-	//std::cout << "[\t";
-	//for (int i = 0; i < iInputString.size(); i++)
+	//sInputString = "(" + sInputString + ")";
+	//std::istringstream istream(sInputString);
+	//double d1;
+	//while (is.rdbuf()->in_avail() > 0)
 	//{
-	//	std::cout << iInputString[i] << '\t';
+	//	is >> d1;
+	//	if (is.fail())
+	//	{
+	//		checkForLegalSymbol(is, iInputString);
+	//	}
+	//	else
+	//	{
+	//		dNumbers.push_back(d1);
+	//		iInputString.push_back(dNumbers.size() - 1);
+	//	}
 	//}
-	//std::cout << "]\n";
-	std::cout << answer << '\n';
+	//insertMissingAddOperators(iInputString);
+	if (handleInputString(istream, iInput, dNumbers, legalChars))
+	{
+		for (int i = 0; i < iInput.size(); i++) 
+		{
+			//std::cout << iInput[i] << '\n';
+			if (iInput[i] >= 0)
+			{
+				std::cout << dNumbers[iInput[i]];
+			}
+			else
+			{
+				std::cout << legalChars[-(iInput[i]) - 1];
+			}
+		}
+		std::cout << " = ";
+		int index = 1;
+		double answer = runCalc(-1, iInput, dNumbers, operators, index);
+		//std::cout << "[\t";
+		//for (int i = 0; i < iInputString.size(); i++)
+		//{
+		//	std::cout << iInputString[i] << '\t';
+		//}
+		//std::cout << "]\n";
+		std::cout << answer << '\n';
+	}
+	else
+	{
+		std::cout << "Syntax error.\n";
+	}
 }
 
 void test2()
