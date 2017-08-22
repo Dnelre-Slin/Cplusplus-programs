@@ -14,7 +14,7 @@ double mul(double d1, double d2)
 }
 double div(double d1, double d2)
 {
-	if (d2 == 0) 
+	if (d2 == 0)
 	{
 		throw std::runtime_error("Divide by zero exception");
 	}
