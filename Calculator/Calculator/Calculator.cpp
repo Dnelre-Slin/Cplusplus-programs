@@ -45,23 +45,25 @@ class Calculator
 	int const_count = 0;
 
 	// Plain constants
-	const int c_paranthesis_start = --const_count;
-	const int c_paranthesis_end = --const_count;
-	const int c_factorial = --const_count;
+	const int c_paranthesis_start		= --const_count;
+	const int c_paranthesis_end			= --const_count;
+	const int c_factorial				= --const_count;
 
-	const int c_number_of_plain_const = -const_count;
+	const int c_number_of_plain_const	=  -const_count;
 
 	// Operator constants
-	const int c_plus = --const_count;
-	const int c_first_operator = const_count;
-	const int c_minus = --const_count;
-	const int c_multiply = --const_count;
-	const int c_divide = --const_count;
-	const int c_modulo = --const_count;
-	const int c_exponential = --const_count;
-	const int c_last_operator = const_count;
+	const int c_plus					= --const_count;
+	const int c_first_operator			=   const_count;
+	const int c_minus					= --const_count;
+	const int c_multiply				= --const_count;
+	const int c_divide					= --const_count;
+	const int c_modulo					= --const_count;
+	const int c_exponential				= --const_count;
+	const int c_nPr						= --const_count;
+	const int c_nCr						= --const_count;
+	const int c_last_operator			=   const_count;
 
-	const int c_number_of_operators = -const_count - c_number_of_operators;
+	const int c_number_of_operators		= -const_count - c_number_of_operators;
 
 	// End of constant declarations. (Variable const_count, should not be used beyond this point.)
 
@@ -255,8 +257,22 @@ class Calculator
 		}
 	}
 
+	//Removes all spaces and tabs from the string.
+	void clearWhitespace(std::string &input)
+	{
+		std::string s = "";
+		for (int i = 0; i < input.length(); i++) {
+			if (input[i] == ' ' || input[i] == '\t') {
+				continue;
+			}
+			s += input[i];
+		}
+		input = s;
+	}
+
 	void calculatorLoop(std::string &sInputString)
 	{
+		clearWhitespace(sInputString);
 		std::istringstream istream(sInputString);
 		if (handleInputString(istream))
 		{
@@ -287,7 +303,7 @@ class Calculator
 public:
 	Calculator()
 	{
-		legalOperators = "+-*/%^"; // <- Must be in the same order as the constants were declared.
+		legalOperators = "+-*/%^pc"; // <- Must be in the same order as the constants were declared, and the operators bellow.
 
 		int key = -1 - c_number_of_plain_const;
 		operators.push_back(Operators(key--, 0, add));
@@ -296,6 +312,8 @@ public:
 		operators.push_back(Operators(key--, 1, div));
 		operators.push_back(Operators(key--, 1, mod));
 		operators.push_back(Operators(key--, 2, pow, 1));
+		operators.push_back(Operators(key--, 4, nPr));
+		operators.push_back(Operators(key--, 4, nCr));
 
 		startCalculator();
 	}
@@ -313,22 +331,18 @@ public:
 	}
 };
 
-
-#include <string>
-#include <iostream>
-
-//Removes all spaces and tabs from the string.
-void clearWhitespace(std::string &input)
-{
-	std::string s = "";
-	for (int i = 0; i < input.length(); i++) {
-		if (input[i] == ' ' || input[i] == '\t') {
-			continue;
-		}
-		s += input[i];
-	}
-	input = s;
-}
+////Removes all spaces and tabs from the string.
+//void clearWhitespace(std::string &input)
+//{
+//	std::string s = "";
+//	for (int i = 0; i < input.length(); i++) {
+//		if (input[i] == ' ' || input[i] == '\t') {
+//			continue;
+//		}
+//		s += input[i];
+//	}
+//	input = s;
+//}
 
 /*
 void insertStartEndParanthesis(std::string &input) {
@@ -421,6 +435,17 @@ int main()
 	//std::cin.get();
 
 	Calculator();
+
+	//try
+	//{
+	//	std::cout << nCr(50,48) << '\n';
+	//}
+	//catch (std::runtime_error re)
+	//{
+	//	std::cout << re.what() << '\n';
+	//}
+
+	system("pause");
 
 	return 0;
 }
