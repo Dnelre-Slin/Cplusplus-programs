@@ -9,7 +9,7 @@ class Operators
 	double(*mathFunc) (double, double);
 
 public:
-	Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0);
+	Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix);
 	int getKey();
 	int getPriority();
 	int getNextPriority();
