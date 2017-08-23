@@ -86,7 +86,7 @@ class Calculator
 	void clearWhitespace(std::string &input);
 	void calculatorLoop(std::string &sInputString);
 	void clearVectors();
-	// MASTER BRANCH
+	// TEST BRANCH
 
 public:
 	Calculator();
