@@ -20,7 +20,7 @@ double Calculator::runCalc(int start_priority, int &index)
 		}
 		else if (iInput[index] == c_factorial)
 		{
-			ans = factorial(ans);
+			ans = MyMath::factorial(ans);
 			index++;
 		}
 		else if (iInput[index] >= 0) //Is a number.
@@ -236,14 +236,14 @@ Calculator::Calculator()
 	legalOperators = "+-*/%^pc"; // <- Must be in the same order as the constants were declared, and the operators bellow.
 
 	int key = -1 - c_number_of_plain_const;
-	operators.push_back(Operators(key--, 0, add));
-	operators.push_back(Operators(key--, 0, sub));
-	operators.push_back(Operators(key--, 1, mul));
-	operators.push_back(Operators(key--, 1, div));
-	operators.push_back(Operators(key--, 1, mod));
+	operators.push_back(Operators(key--, 0, MyMath::add));
+	operators.push_back(Operators(key--, 0, MyMath::sub));
+	operators.push_back(Operators(key--, 1, MyMath::mul));
+	operators.push_back(Operators(key--, 1, MyMath::div));
+	operators.push_back(Operators(key--, 1, MyMath::mod));
 	operators.push_back(Operators(key--, 2, pow, 1));
-	operators.push_back(Operators(key--, 4, nPr));
-	operators.push_back(Operators(key--, 4, nCr));
+	operators.push_back(Operators(key--, 4, MyMath::nPr));
+	operators.push_back(Operators(key--, 4, MyMath::nCr));
 
 	startCalculator();
 }

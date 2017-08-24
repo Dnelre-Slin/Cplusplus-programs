@@ -1,6 +1,6 @@
 #include "Operator.h"
 
-Operators::Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0)
+Operators::Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix)
 {
 	key = start_key;
 	priority = start_priority;
