@@ -111,14 +111,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BasicMathFuncscpp.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="CalculatorOld.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="Operator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BasicMathFuncs.h" />
     <ClInclude Include="Calculator.h" />
+    <ClInclude Include="MathFunctions.h" />
+    <ClInclude Include="MyConsts.h" />
+    <ClInclude Include="MyExceptions.h" />
     <ClInclude Include="Operator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

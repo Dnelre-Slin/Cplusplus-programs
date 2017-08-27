@@ -2,9 +2,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <time.h>
+#include <unordered_map>
 //#include <math.h>
 //#include <cmath>
 #include "BasicMathFuncs.h"
+#include "Operators.h"
 
 //enum MyConsts
 //{
@@ -23,40 +26,40 @@
 //	last_operator		= -8
 //};
 
-class Operators
-{
-	int key;
-	int priority;
-	int exp_fix;
-
-	double(*mathFunc) (double, double);
-
-public:
-	Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0)
-	{
-		key      = start_key;
-		priority = start_priority;
-		exp_fix  = start_exp_fix;
-
-		mathFunc = startMathFunc;
-	}
-	int getKey()
-	{
-		return key;
-	}
-	int getPriority()
-	{
-		return priority;
-	}
-	int getNextPriority()
-	{
-		return priority + exp_fix;
-	}
-	double doOperation(double d1, double d2)
-	{
-		return mathFunc(d1, d2);
-	}
-};
+//class Operators
+//{
+//	int key;
+//	int priority;
+//	int exp_fix;
+//
+//	double(*mathFunc) (double, double);
+//
+//public:
+//	Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0)
+//	{
+//		key      = start_key;
+//		priority = start_priority;
+//		exp_fix  = start_exp_fix;
+//
+//		mathFunc = startMathFunc;
+//	}
+//	int getKey()
+//	{
+//		return key;
+//	}
+//	int getPriority()
+//	{
+//		return priority;
+//	}
+//	int getNextPriority()
+//	{
+//		return priority + exp_fix;
+//	}
+//	double doOperation(double d1, double d2)
+//	{
+//		return mathFunc(d1, d2);
+//	}
+//};
 
 class Calculator
 {
@@ -827,6 +830,247 @@ void test3()
 }
 */
 
+int64_t longPow(int64_t i, int e)
+{
+	if (e == 0)
+		return 1;
+	return i * longPow(i, e - 1);
+}
+
+void commonFactors(int64_t &n1, int64_t &n2)
+{
+	int64_t low;
+	if (n1 < n2)
+	{
+		if (!(n2 % n1))
+		{
+			n1 /= n1;
+			n2 /= n1;
+			return;
+		}
+		low = n1;
+	}
+	else
+	{
+		if (!(n1 % n2))
+		{
+			n1 /= n2;
+			n2 /= n2;
+			return;
+		}
+		low = n2;
+	}
+	/*int64_t low = (n1 < n2) ? n1 : n2;*/
+	if (!(n1 % (low / 2) ||  n2 % (low / 2)))
+	{
+		n1 /= (low / 2);
+		n2 /= (low / 2);
+		return;
+	}
+	int64_t _n1 = n1, _n2 = n2;
+	for (int64_t i = 3, j = low; i <= j; i += 2)
+	{
+		if (!(n1 % (low / i) || n2 % (low / i)))
+		{
+			n1 /= (low / i);
+			n2 /= (low / i);
+			return;
+		}
+		if (!(_n1 % (_n1 / i)))
+		{
+			_n1 /= (_n1 / i);
+		}
+		if (!(_n2 % (_n2 / i)))
+		{
+			_n2 /= (_n2 / i);
+		}
+	}
+}
+
+void findFactors(int64_t n)
+{
+	if (!(n % (n / 2)))
+	{
+		std::cout << "Factors of " << n << " are:   " << 2 << "  and   " << (n / 2) << '\n';
+		return;
+	}
+	for (int64_t i = 3, j = sqrt(n); i <= j; i+=2)
+	{
+		if (!(n % (n / i)))
+		{
+			std::cout << "Factors of " << n <<" are:   " << i << "  and   " << (n / i) << '\n';
+			return;
+		}
+	}
+	std::cout << n << " is a prime number\n";
+}
+void findAllFactors(int64_t n)
+{
+	if (abs(sqrt(n)) >= 2)
+	{
+		if (!(n % (n / 2)))
+		{
+			std::cout << "   " << 2;
+			findAllFactors(n / 2);
+			return;
+		}
+		for (int64_t i = 3, j = sqrt(n); i <= j; i += 2)
+		{
+			if (!(n % (n / i)))
+			{
+				std::cout << "   " << i;
+				findAllFactors(n / i);
+				return;
+			}
+		}
+	}
+	std::cout << "   " << n << "\n";
+}
+
+void factorize(int64_t n1)
+{
+	int64_t n = n1;
+	while (!(n % 2) && 2 <= sqrt(n1))
+	{
+		n /= 2;
+		std::cout << 2 << "   ";
+	}
+	int64_t i = 3;
+	while (i <= sqrt(n1))
+	{
+		if (!(n % i))
+		{
+			n /= i;
+			std::cout << i << "   ";
+		}
+		else
+		{
+			i += 2;
+		}
+	}
+	std::cout << n << "\n\n";
+}
+
+inline void swapNr(int64_t &n1, int64_t &n2)
+{
+	int h = n1;
+	n1 = n2, n2 = h;
+}
+
+void smallestFraction(int64_t &n, int64_t &d)
+{
+	if (n % d == 0)
+	{
+		n /= d;
+		d = 1;
+		return;
+	}
+	int64_t x = n / d;
+	n = n % d;
+	smallestFraction(d, n);
+	n = n + (x * d);
+}
+
+void shortenFraction(int64_t &n, int64_t &d)
+{
+	if (n == d)
+	{
+		n = 1;
+		d = 1;
+		return;
+	}
+	if (n > d)
+	{
+		if (!(n%d))
+		{
+			n /= d;
+			d = 1;
+			return;
+		}
+		int64_t x = n / d;
+		n = n % d;
+		smallestFraction(d, n);
+		n = n + (x * d);
+	}
+	smallestFraction(d, n);
+}
+
+void test4()
+{
+	//int64_t i64 = INT64_MAX;
+	//i64 = sqrtl(i64);
+	//i64 = pow(i64, 2);
+	//std::cout << i64 << "  " << sizeof(int64_t) <<  '\n';
+
+	int64_t n1, n2;
+
+	n1 = -4;
+	n2 = 8;
+
+	//n1 = -longPow(2, 60);
+	//n2 = longPow(3, 35);
+
+	//n1 = 12365474;
+	//n1 = INT64_MAX - 543;
+
+	std::cout << n1 << "  " << n2 << "\n\n";
+
+	smallestFraction(n1, n2);
+
+	//swapNr(n1, n2);
+
+	//factorize(n1);
+
+	//n1 = pow((int64_t)2,60);
+	//n2 = pow((int64_t)3, 35);	
+	//
+	//std::cout << n1 << "  " << n2 << "\n\n";
+
+	//findAllFactors(n1);
+	//std::cout << std::endl;
+	//findAllFactors(n2);
+	//std::cout << "\n\n";
+
+	//commonFactors(n1, n2);
+
+	std::cout << n1 << "  " << n2 << "\n\n";
+
+	//srand(time(NULL));
+
+	//int64_t n = (int64_t)3000021389 * (int64_t)3000021389;
+
+	//std::cout << n << '\n';
+
+	//findFactors(n);
+
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	n = rand() + 3000000000;
+	//	//std::cout << (n / 649913) << '\n';
+	//	findFactors(n);
+	//}
+}
+
+double bla(double d, double d2)
+{
+	return 2;
+}
+
+void test5()
+{
+	//std::hash_map<char, Operators> m;
+	std::unordered_map<char, Operators> m;
+	m['+'] = Operators(0,0,bla);
+	//m['+'].set(0, 0, bla);
+	//Operators op = Operators(0, 0, bla);
+	//m.emplace('+',op);
+	//m['b'] = Operators(0, 1, bla, 1);
+
+	std::cout << m['+'].doOperation(1,1) << '\n';
+
+	//std::cout << m['a'] << "  " << m['b'] << '\n';
+}
+
 int main()
 {
 	//unsigned int y = 1024;
@@ -844,7 +1088,11 @@ int main()
 	//test2();
 	//test3();
 
-	Calculator();
+	//Calculator();
+
+	//test4();
+
+	test5();
 
 	system("PAUSE");
 	return 0;

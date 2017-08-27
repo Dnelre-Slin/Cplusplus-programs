@@ -2,7 +2,6 @@
 
 class Operators
 {
-private:
 	int key;
 	int priority;
 	int exp_fix;
