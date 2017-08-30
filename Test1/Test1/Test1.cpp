@@ -1071,6 +1071,13 @@ void test5()
 	//std::cout << m['a'] << "  " << m['b'] << '\n';
 }
 
+void testCin()
+{
+	std::string s;
+	std::cin >> s;
+	std::cout << '\n' << s << '\n';
+}
+
 int main()
 {
 	//unsigned int y = 1024;
@@ -1092,7 +1099,9 @@ int main()
 
 	//test4();
 
-	test5();
+	//test5();
+
+	testCin();
 
 	system("PAUSE");
 	return 0;

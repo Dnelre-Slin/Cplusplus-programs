@@ -114,6 +114,7 @@
     <ClCompile Include="BasicMathFuncscpp.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="CalculatorOld.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="Operator.cpp" />
@@ -121,6 +122,7 @@
   <ItemGroup>
     <ClInclude Include="BasicMathFuncs.h" />
     <ClInclude Include="Calculator.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="MyConsts.h" />
     <ClInclude Include="MyExceptions.h" />
