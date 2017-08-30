@@ -1,4 +1,6 @@
 #include "Calculator.h"
+#include <iostream>
+#include <cmath>
 
 int main()
 {

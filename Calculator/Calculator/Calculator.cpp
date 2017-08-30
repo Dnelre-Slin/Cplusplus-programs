@@ -4,35 +4,26 @@
 #include "Calculator.h"
 #include "BasicMathFuncs.h"
 
-double Calculator::runCalc(int start_priority, std::istringstream &istream, MyConsts &lastSymbol, int &parantheses_count)
+double Calculator::runCalc(int start_priority, std::string &str, MyConsts &lastSymbol, int &index, int &parantheses_count)
 {
 	double ans = 0, temp_ans = 0;
-	char c;
+	//char c;
 	std::string func_name;
-	std::istringstream::pos_type stream_pos;
-	while (istream.rdbuf()->in_avail() > 0)
+	int stored_index;
+	while (index < str.length())
 	{
-		c = istream.peek();
-		if (c == '(')
+		if (str[index] == '(')
 		{
 			double multiplier = 1;
 			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))
 				return ans;
-			//if (lastSymbol == MyConsts::number || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end) // Is a number, factorial or an end parantesis.
-			//{
-			//	if (1 > start_priority) // 1 is priority of multiply.
-			//		multiplier = ans;
-			//	else
-			//		return ans;
-			//}
-			istream >> c;
 			parantheses_count++;
 			lastSymbol = MyConsts::paranthesis_start;
-			ans = multiplier * runCalc(-1, istream, lastSymbol, parantheses_count);
+			ans = multiplier * runCalc(-1, str, lastSymbol, ++index, parantheses_count);
 			parantheses_count--;
-			istream >> c;
-		} 
-		else if ((c == ')') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
+			index++;
+		}
+		else if ((str[index] == ')') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
 		{   //If last element is a number, factorial or an end paranthesis.
 			lastSymbol = MyConsts::paranthesis_end;
 			if (parantheses_count < 1)
@@ -41,89 +32,62 @@ double Calculator::runCalc(int start_priority, std::istringstream &istream, MyCo
 			}
 			return ans;
 		}
-		else if ((c == '!') && ((lastSymbol == MyConsts::number) || (lastSymbol == MyConsts::paranthesis_end))) //If c is '!' and last element is a number or an end parathesis.
+		else if ((str[index] == '!') && ((lastSymbol == MyConsts::number) || (lastSymbol == MyConsts::paranthesis_end))) //If c is '!' and last element is a number or an end parathesis.
 		{
 			lastSymbol = MyConsts::factorial;
 			ans = MyMath::factorial(ans);
-			istream >> c;
+			index++;
 		}
-		else if ((c == '>') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
+		else if ((str[index] == '>') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
 		{
-			istream >> c;
-			c = istream.peek();
-			if (c >= 65 && c <= 90)
+			if (str[++index] >= 65 && str[index] <= 90)
 			{
-				variable_to_be_stored = c;
+				variable_to_be_stored = str[index];
 				do_store_variable = true;
 				//std::cout << "variable stored in " << variable_to_be_stored <<  << ".\n";
-				istream >> c;
+				index++;
 				return ans;
 			}
 			throw std::runtime_error("Syntax Error. (Attempting to assign to non-variable)");
 		}
-		else if ((func_name = getName(functions, istream, stream_pos)) != "")
+		else if ((func_name = getName(functions, str, index, stored_index)) != "")
 		{
 			double multiplier = 1;
 			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))
 			{
-				resetStream(istream, stream_pos);
+				index = stored_index; // Reset index to index_pos.
 				return ans;
 			}
-			//if (lastSymbol == MyConsts::number || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end) // Is a number, factorial or an end parantesis.
-			//{
-			//	if (1 > start_priority) // 1 is priority of multiply.
-			//		multiplier = ans;
-			//	else
-			//	{
-			//		resetStream(istream, stream_pos);
-			//		return ans;
-			//	}
-			//}
 			lastSymbol = MyConsts::function;
-			ans = multiplier * functions[func_name].doOperation(runCalc(6, istream, lastSymbol, parantheses_count));
+			ans = multiplier * functions[func_name].doOperation(runCalc(6, str, lastSymbol, index, parantheses_count));
 		}
-		else if (isNumber(istream, temp_ans))
+		else if (isNumber(str, index, temp_ans))
 		{
 			double multiplier = 1;
 			priorityReturn(lastSymbol, start_priority, ans, multiplier);
 			ans = multiplier * temp_ans;
 			lastSymbol = MyConsts::number;
 		}
-		else if (operators.find(c) != operators.end() && lastSymbol != MyConsts::operators && lastSymbol != MyConsts::paranthesis_start && lastSymbol != MyConsts::function)
+		else if (operators.find(str[index]) != operators.end() && lastSymbol != MyConsts::operators && lastSymbol != MyConsts::paranthesis_start && lastSymbol != MyConsts::function)
 		{	// If c is an operator and back() is not an operator and not a '('. (Functions should also be here).
-			Operators op = operators[c];
+			Operators op = operators[str[index]];
 
 			if (op.getNextPriority() > start_priority)
 			{
 				lastSymbol = MyConsts::operators;
-				istream >> c;
-				ans = op.doOperation(ans, runCalc(op.getPriority(), istream, lastSymbol, parantheses_count));
+				index++;
+				ans = op.doOperation(ans, runCalc(op.getPriority(), str, lastSymbol, index, parantheses_count));
 			}
 			else
 			{
 				return ans;
 			}
 		}
-		else if (isSign(istream))
+		else if (isSign(str, index))
 		{
 			lastSymbol = MyConsts::sign;
-			ans = -runCalc(6, istream, lastSymbol, parantheses_count);
+			ans = -runCalc(6, str, lastSymbol, index, parantheses_count);
 		}
-		//else if (isNumber(istream, temp_ans))
-		//{
-		//	double multiplier = 1;
-		//	priorityReturn(lastSymbol, start_priority, ans, multiplier);
-		//	//if (lastSymbol == MyConsts::paranthesis_end || lastSymbol == MyConsts::factorial)
-		//	//{	//(Should also consider variables here.)
-		//	//	ans *= temp_ans;
-		//	//}
-		//	//else
-		//	//{
-		//	//	ans = temp_ans;
-		//	//}
-		//	ans = multiplier * temp_ans;
-		//	lastSymbol = MyConsts::number;
-		//}
 		else // If it makes it this far, there must be a syntax error, since all possible legal options should be covered in the if's.
 		{
 			throw std::runtime_error("Syntax Error.");
@@ -132,6 +96,135 @@ double Calculator::runCalc(int start_priority, std::istringstream &istream, MyCo
 	}
 	return ans;
 }
+
+//double Calculator::runCalc(int start_priority, std::istringstream &istream, MyConsts &lastSymbol, int &parantheses_count)
+//{
+//	double ans = 0, temp_ans = 0;
+//	char c;
+//	std::string func_name;
+//	std::istringstream::pos_type stream_pos;
+//	while (istream.rdbuf()->in_avail() > 0)
+//	{
+//		c = istream.peek();
+//		if (c == '(')
+//		{
+//			double multiplier = 1;
+//			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))
+//				return ans;
+//			//if (lastSymbol == MyConsts::number || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end) // Is a number, factorial or an end parantesis.
+//			//{
+//			//	if (1 > start_priority) // 1 is priority of multiply.
+//			//		multiplier = ans;
+//			//	else
+//			//		return ans;
+//			//}
+//			istream >> c;
+//			parantheses_count++;
+//			lastSymbol = MyConsts::paranthesis_start;
+//			ans = multiplier * runCalc(-1, istream, lastSymbol, parantheses_count);
+//			parantheses_count--;
+//			istream >> c;
+//		} 
+//		else if ((c == ')') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
+//		{   //If last element is a number, factorial or an end paranthesis.
+//			lastSymbol = MyConsts::paranthesis_end;
+//			if (parantheses_count < 1)
+//			{
+//				throw std::runtime_error("Syntax Error. (Too many end parantheses.)");
+//			}
+//			return ans;
+//		}
+//		else if ((c == '!') && ((lastSymbol == MyConsts::number) || (lastSymbol == MyConsts::paranthesis_end))) //If c is '!' and last element is a number or an end parathesis.
+//		{
+//			lastSymbol = MyConsts::factorial;
+//			ans = MyMath::factorial(ans);
+//			istream >> c;
+//		}
+//		else if ((c == '>') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
+//		{
+//			istream >> c;
+//			c = istream.peek();
+//			if (c >= 65 && c <= 90)
+//			{
+//				variable_to_be_stored = c;
+//				do_store_variable = true;
+//				//std::cout << "variable stored in " << variable_to_be_stored <<  << ".\n";
+//				istream >> c;
+//				return ans;
+//			}
+//			throw std::runtime_error("Syntax Error. (Attempting to assign to non-variable)");
+//		}
+//		else if ((func_name = getName(functions, istream, stream_pos)) != "")
+//		{
+//			double multiplier = 1;
+//			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))
+//			{
+//				resetStream(istream, stream_pos);
+//				return ans;
+//			}
+//			//if (lastSymbol == MyConsts::number || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end) // Is a number, factorial or an end parantesis.
+//			//{
+//			//	if (1 > start_priority) // 1 is priority of multiply.
+//			//		multiplier = ans;
+//			//	else
+//			//	{
+//			//		resetStream(istream, stream_pos);
+//			//		return ans;
+//			//	}
+//			//}
+//			lastSymbol = MyConsts::function;
+//			ans = multiplier * functions[func_name].doOperation(runCalc(6, istream, lastSymbol, parantheses_count));
+//		}
+//		else if (isNumber(istream, temp_ans))
+//		{
+//			double multiplier = 1;
+//			priorityReturn(lastSymbol, start_priority, ans, multiplier);
+//			ans = multiplier * temp_ans;
+//			lastSymbol = MyConsts::number;
+//		}
+//		else if (operators.find(c) != operators.end() && lastSymbol != MyConsts::operators && lastSymbol != MyConsts::paranthesis_start && lastSymbol != MyConsts::function)
+//		{	// If c is an operator and back() is not an operator and not a '('. (Functions should also be here).
+//			Operators op = operators[c];
+//
+//			if (op.getNextPriority() > start_priority)
+//			{
+//				lastSymbol = MyConsts::operators;
+//				istream >> c;
+//				ans = op.doOperation(ans, runCalc(op.getPriority(), istream, lastSymbol, parantheses_count));
+//			}
+//			else
+//			{
+//				return ans;
+//			}
+//		}
+//		else if (isSign(istream))
+//		{
+//			lastSymbol = MyConsts::sign;
+//			ans = -runCalc(6, istream, lastSymbol, parantheses_count);
+//		}
+//		//else if (isNumber(istream, temp_ans))
+//		//{
+//		//	double multiplier = 1;
+//		//	priorityReturn(lastSymbol, start_priority, ans, multiplier);
+//		//	//if (lastSymbol == MyConsts::paranthesis_end || lastSymbol == MyConsts::factorial)
+//		//	//{	//(Should also consider variables here.)
+//		//	//	ans *= temp_ans;
+//		//	//}
+//		//	//else
+//		//	//{
+//		//	//	ans = temp_ans;
+//		//	//}
+//		//	ans = multiplier * temp_ans;
+//		//	lastSymbol = MyConsts::number;
+//		//}
+//		else // If it makes it this far, there must be a syntax error, since all possible legal options should be covered in the if's.
+//		{
+//			throw std::runtime_error("Syntax Error.");
+//		}
+//		//std::cout << "par: " << parantheses_count << "      ans: " << ans << '\n';
+//	}
+//	return ans;
+//}
 
 //double Calculator::runCalc(int start_priority, int &index)
 //{
@@ -221,44 +314,51 @@ bool Calculator::priorityReturn(MyConsts &lastSymbol, int &start_priority, doubl
 	return false;
 }
 
-inline void Calculator::resetStream(std::istringstream &istream, std::istringstream::pos_type &stream_pos)
-{
-	istream.clear();
-	istream.seekg(stream_pos, istream.beg);
-}
+//inline void Calculator::resetStream(std::istringstream &istream, std::istringstream::pos_type &stream_pos)
+//{
+//	istream.clear();
+//	istream.seekg(stream_pos, istream.beg);
+//}
+
 template <class t1, class t2>
-std::string Calculator::getName(std::unordered_map<t1,t2> map, std::istringstream &istream, std::istringstream::pos_type &stream_pos)
+std::string Calculator::getName(std::unordered_map<t1,t2> &map, std::string &str, int &index, int &stored_index)
 {
 	//Solution found here.
 	// https://stackoverflow.com/questions/34050729/how-to-read-from-the-same-location-in-a-stringstream-twice
-	stream_pos = istream.tellg();
-	std::string func_name = "";
-	char c = istream.peek();
-	char c2;
-	while (((int)c >= 97 && (int)c <= 122)) // c is a small letter. Numbers represent ascii position of letters.
+	//stream_pos = istream.tellg();
+	stored_index = index;
+	std::string name;
+	//char c = istream.peek();
+	//char c2;
+	while (((int)str[index] >= 97 && (int)str[index] <= 122)) // c is a small letter. Numbers represent ascii position of letters.
 	{
-		istream >> c2;
-		func_name += c;
-		if (map.find(func_name) != map.end()) // If func_name is found in functions map.
+		//istream >> c2;
+		//func_name += c;
+		name += str[index];
+		if (map.find(name) != map.end()) // If func_name is found in functions map.
 		{
-			return func_name;
+			index++;
+			return name;
 		}
-		c = istream.peek();
+		//c = istream.peek();
+		index++;
 	}
-	resetStream(istream, stream_pos);
+	//resetStream(istream, stream_pos);
+	index = stored_index;
 	return "";
 }
 
-bool Calculator::isSign(std::istringstream &istream)
+bool Calculator::isSign(std::string &str, int &index)
 {
-	char c = istream.peek();
+	//char c = istream.peek();
 	bool is_positive = true;
-	while (c == '+' || c == '-') {
-		if (c == '-') {
+	while (str[index] == '+' || str[index] == '-') {
+		if (str[index] == '-') {
 			is_positive = !is_positive; //Swap between positive and negative, everytime minus sign shows up
 		}
-		istream >> c;
-		c = istream.peek();
+		//istream >> c;
+		//c = istream.peek();
+		index++;
 	}
 	if (!is_positive)
 	{
@@ -267,13 +367,14 @@ bool Calculator::isSign(std::istringstream &istream)
 	return false;
 }
 
-bool Calculator::isConstant(std::istringstream &istream, double &d)
+bool Calculator::isConstant(std::string &str, int &index, double &d)
 {
 	double d2;
-	std::istringstream::pos_type pos;
+	//std::istringstream::pos_type pos;
+	int stored_index;
 	std::string const_name;
 	//func_name = getName(functions, istream, pos);
-	const_name = getName(constants, istream, pos);
+	const_name = getName(constants, str, index, stored_index);
 	//std::cout << "Func:  \"" << func_name << "\"\n";
 	//std::cout << "Const:  \"" << const_name << "\"\n";
 	//if (getName(functions, istream, pos) == "" && (const_name = getName(constants, istream, pos)) != "")
@@ -288,41 +389,43 @@ bool Calculator::isConstant(std::istringstream &istream, double &d)
 	return false;
 }
 
-bool Calculator::isVariable(std::istringstream &istream, double &d)
+bool Calculator::isVariable(std::string &str, int &index, double &d)
 {
 	bool is_variable = false;
 	double d2 = 1;
-	char c = istream.peek();
-	while ((int)c >= 65 && (int)c <= 90) // While c is a captial letter.
+	//char c = istream.peek();
+	while ((int)str[index] >= 65 && (int)str[index] <= 90) // While c is a captial letter.
 	{
-		d2 *= variables[(int)c - 65]; // Converts from ascii capital letter to index of variables.
-		istream >> c;
-		c = istream.peek();
+		d2 *= variables[(int)str[index] - 65]; // Converts from ascii capital letter to index of variables.
+		//istream >> c;
+		//c = istream.peek();
+		index++;
 		is_variable = true;
 	}
 	d *= d2;
 	return is_variable;
 }
 
-bool Calculator::isActualNumber(std::istringstream &istream, double &d)
+bool Calculator::isActualNumber(std::string &str, int &index, double &d)
 {
 	double d2;
 	bool decimal_point_used = false;
 	std::string nr;
-	char c = istream.peek();
-	while (c == '.' || c == ',' || ((int)c >= 48 && (int)c <= 57)) // While c is a . or a , or a number.
+	//char c = istream.peek();
+	while (str[index] == '.' || str[index] == ',' || ((int)str[index] >= 48 && (int)str[index] <= 57)) // While c is a . or a , or a number.
 	{
-		if ((c == '.' || c == ',') && decimal_point_used)
+		if ((str[index] == '.' || str[index] == ',') && decimal_point_used)
 			throw std::runtime_error("Syntax Error. (Two decimal points in one number)");
-		if (c == ',' || c == '.')
+		if (str[index] == ',' || str[index] == '.')
 		{
 			nr += '.';
 			decimal_point_used = true;
 		}
 		else
-			nr += c;
-		istream >> c;
-		c = istream.peek();
+			nr += str[index];
+		//istream >> c;
+		//c = istream.peek();
+		index++;
 	}
 	if (nr.length() > 0)
 	{
@@ -333,10 +436,10 @@ bool Calculator::isActualNumber(std::istringstream &istream, double &d)
 	return false;
 }
 
-bool Calculator::isNumber(std::istringstream &istream, double &d)
+bool Calculator::isNumber(std::string &str, int &index, double &d)
 {
 	d = 1;
-	if (isActualNumber(istream, d) || isVariable(istream, d) || isConstant(istream ,d))
+	if (isActualNumber(str, index, d) || isVariable(str, index, d) || isConstant(str, index, d))
 	{
 	//	while (isActualNumber(istream, d) && isVariable(istream, d) && isConstant(istream, d)) { std::cout << "WHat the fuck!!\n"; }
 		return true;
@@ -488,12 +591,12 @@ void Calculator::clearWhitespace(std::string &input)
 void Calculator::calculatorLoop(std::string &sInputString)
 {
 	clearWhitespace(sInputString);
-	std::istringstream istream(sInputString);
+	//std::istringstream istream(sInputString);
 	try
 	{
 		MyConsts lastSymbol = MyConsts::paranthesis_start;
-		int parantheses_count = 0;
-		double ans = runCalc(-1, istream, lastSymbol, parantheses_count);
+		int parantheses_count = 0, index = 0;
+		double ans = runCalc(-1, sInputString, lastSymbol, index, parantheses_count);
 		constants["ans"] = ans;
 		if (do_store_variable)
 		{
@@ -566,6 +669,8 @@ Calculator::Calculator()
 	functions["sqrt"]	= MathFunctions(sqrt);
 	functions["ln"]		= MathFunctions(log);
 	functions["log"]	= MathFunctions(log10);
+	functions["abs"]	= MathFunctions(abs);
+	
 
 	constants["ans"]	= 0;
 	constants["pi"]		= 3.1415926535897932384626433832795028841971693993751;

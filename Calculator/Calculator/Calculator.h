@@ -51,20 +51,21 @@ private:
 
 	//std::string legalOperators;
 
-	double		runCalc(int start_priority, std::istringstream &istream, MyConsts &lastSymbol, int &parantheses_count);
+	double		runCalc(int start_priority, std::string &str, MyConsts &lastSymbol, int &index, int &parantheses_count);
+	//double		runCalc(int start_priority, std::istringstream &istream, MyConsts &lastSymbol, int &parantheses_count);
 	//double	runCalc(int start_priority, int &index);
 	//int		getKeyOfOperator(char c);
 	//bool	isOperator2(char c);
 	//bool	isOperator(int key);
 	bool		priorityReturn(MyConsts &lastSymbol, int &start_priority, double &ans, double &multiplier);
-	inline void	resetStream(std::istringstream &istream, std::istringstream::pos_type &pos);
+	//inline void	resetStream(std::istringstream &istream, int &index, std::istringstream::pos_type &pos);
 	template <class T1, class T2>
-	std::string getName(std::unordered_map<T1, T2> map, std::istringstream &istream, std::istringstream::pos_type &pos);
-	bool		isSign(std::istringstream &istream);
-	bool		isConstant(std::istringstream &istream, double &d);
-	bool		isVariable(std::istringstream &istream, double &d);
-	bool		isActualNumber(std::istringstream &istream, double &d);
-	bool		isNumber(std::istringstream &istream, double &d);
+	std::string getName(std::unordered_map<T1, T2> &map, std::string &str, int &index, int &stored_index);
+	bool		isSign(std::string &str, int &index);
+	bool		isConstant(std::string &str, int &index, double &d);
+	bool		isVariable(std::string &str, int &index, double &d);
+	bool		isActualNumber(std::string &str, int &index, double &d);
+	bool		isNumber(std::string &str, int &index, double &d);
 	//bool	isSign(std::istringstream &istream);
 	//bool	isNumber(std::istringstream &istream);
 	//bool	handleInputString(std::istringstream &istream);
