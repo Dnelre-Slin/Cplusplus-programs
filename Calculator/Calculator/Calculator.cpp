@@ -61,6 +61,13 @@ double Calculator::runCalc(int start_priority, std::string &str, MyConsts &lastS
 			lastSymbol = MyConsts::function;
 			ans = multiplier * functions[func_name].doOperation(runCalc(6, str, lastSymbol, index, parantheses_count));
 		}
+		else if (isNumber(str, index, temp_ans))
+		{
+			double multiplier = 1;
+			priorityReturn(lastSymbol, start_priority, ans, multiplier);
+			ans = multiplier * temp_ans;
+			lastSymbol = MyConsts::number;
+		}
 		else if (operators.find(str[index]) != operators.end() && lastSymbol != MyConsts::operators && lastSymbol != MyConsts::paranthesis_start && lastSymbol != MyConsts::function)
 		{	// If c is an operator and back() is not an operator and not a '('. (Functions should also be here).
 			Operators op = operators[str[index]];
@@ -76,17 +83,13 @@ double Calculator::runCalc(int start_priority, std::string &str, MyConsts &lastS
 				return ans;
 			}
 		}
-		else if (isSign(str, index))
+		else if (str[index] == '+' || str[index] == '-')
 		{
-			lastSymbol = MyConsts::sign;
-			ans = -runCalc(6, str, lastSymbol, index, parantheses_count);
-		}
-		else if (isNumber(str, index, temp_ans))
-		{
-			double multiplier = 1;
-			priorityReturn(lastSymbol, start_priority, ans, multiplier);
-			ans = multiplier * temp_ans;
-			lastSymbol = MyConsts::number;
+			if (isSign(str, index))
+			{
+				lastSymbol = MyConsts::sign;
+				ans = -runCalc(6, str, lastSymbol, index, parantheses_count);
+			}
 		}
 		else // If it makes it this far, there must be a syntax error, since all possible legal options should be covered in the if's.
 		{
