@@ -3,17 +3,15 @@
 class Operators
 {
 private:
-	int key;
 	int priority;
-	int exp_fix;
+	int pow_fix;
 
 	double(*mathFunc) (double, double);
 
 public:
 	Operators();
-	Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0);
-	void set(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix = 0);
-	int getKey();
+	Operators(int start_priority, double(*startMathFunc)(double, double), int start_pow_fix = 0);
+	void set(int start_priority, double(*startMathFunc)(double, double), int start_pow_fix = 0);
 	int getPriority();
 	int getNextPriority();
 	double doOperation(double d1, double d2);

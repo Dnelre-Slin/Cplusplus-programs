@@ -1,16 +1,16 @@
 #include "InputHandler.h"
 
-inline void writeToString(std::string &s, COORD &pos, char c)
-{
-	s = s.substr(0, pos.X) + c + s.substr(pos.X);
-}
+//inline void InputHandler::writeToString(std::string &s, COORD &pos, char c)
+//{
+//	s = s.substr(0, pos.X) + c + s.substr(pos.X);
+//}
+//
+//void removeFromString(std::string &s, COORD &pos)
+//{
+//	s.erase(pos.X - 1, 1);
+//}
 
-void removeFromString(std::string &s, COORD &pos)
-{
-	s.erase(pos.X - 1, 1);
-}
-
-void repositionPos(std::vector<std::string> &vs, COORD &pos)
+void InputHandler::repositionPos(std::vector<std::string> &vs, COORD &pos)
 {
 	if (pos.X > vs[pos.Y].length())
 	{
@@ -18,7 +18,7 @@ void repositionPos(std::vector<std::string> &vs, COORD &pos)
 	}
 }
 
-void handleInput(COORD &pos, std::vector<std::string> &vs, int i)
+void InputHandler::handleInput(COORD &pos, std::vector<std::string> &vs, int i, bool &run_calculator_loop, bool &run_input_loop, bool &string_untouched)
 {
 	int j;
 	switch (i)
@@ -31,8 +31,16 @@ void handleInput(COORD &pos, std::vector<std::string> &vs, int i)
 		}
 		break;
 	case 13: //Enter.
-		vs.insert(vs.begin() + ++pos.Y, "");
-		pos.X = 0;
+		run_input_loop = false;
+		break;
+	case 27: // Esc.
+		run_calculator_loop = false;
+		run_input_loop = false;
+		break;
+	case 40: // (  Start_parantheses.
+		vs[pos.Y].insert(vs[pos.Y].begin() + pos.X, '(');
+		pos.X++;
+		vs[pos.Y].insert(vs[pos.Y].begin() + pos.X, ')');
 		break;
 	case 0:
 		_getch();
@@ -57,38 +65,54 @@ void handleInput(COORD &pos, std::vector<std::string> &vs, int i)
 			pos.Y++;
 			repositionPos(vs, pos);
 		}
-		else if (j == 83 && pos.X < vs[pos.Y].length()) //Delete
+		else if (j == 83 && pos.X < vs[pos.Y].length()) //Delete.
 		{
 			vs[pos.Y].erase(pos.X, 1);
 		}
 		break;
 	default:
-		if (i >= 32 && i <= 126)
+		if (string_untouched && (i == 43 || i == 45 || i == 42 || i == 47)) // If i is + - * /
 		{
-			writeToString(vs[pos.Y], pos, (char)i);
+			vs[pos.Y] = vs[pos.Y].substr(0, pos.X) + "ans" + (char)i + vs[pos.Y].substr(pos.X);
+			pos.X += 4;
+		}
+		else if (i >= 32 && i <= 126)
+		{
+			vs[pos.Y].insert(vs[pos.Y].begin() + pos.X, (char)i);
 			pos.X += 1;
 		}
 	}
+	string_untouched = false;
 }
 
-void testCursor()
+void InputHandler::clearLine(int line)
 {
-	int i = 0;
-	int min = 0;
-	int max = 12;
-	COORD pos = { 0,0 };
-	std::vector<std::string> vs;
-	vs.push_back("");
-	//std::cout << vs[pos.Y];
-	while (i != 27)
+	setCursorPosition(0, line);
+	std::cout << "                                                                     ";
+	setCursorPosition(0, line);
+}
+
+inline void InputHandler::setCursorPosition(int x, int y)
+{
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { (short)x, (short)y });
+}
+
+int InputHandler::getInput(std::vector<std::string> &strings, bool &run_calculator_loop)
+{
+	if (!strings.back().empty()) // If last string in vector is not empty.
 	{
-		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-		i = _getch();
-		handleInput(pos, vs, i);
-		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, pos.Y });
-		//std::cout << vs[pos.Y] << " ";
-		//SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos2);
-		//std::cout << i << "    " << '\n';
+		strings.push_back(""); // Add a new empty string to vector.
 	}
-	//std::wcout << std::endl;
+	bool run_input_loop = true, string_untoched = true;
+	int i = 0;
+	COORD pos = { 0, (strings.size() - 1) }; //Put cursor start position to X = 0, and Y = (last string in vector's index * 2). * 2 is to skip the answer lines in the console.
+	while (run_input_loop)
+	{
+		setCursorPosition(pos.X, pos.Y * 2);
+		i = _getch();
+		handleInput(pos, strings, i, run_calculator_loop, run_input_loop, string_untoched);
+		setCursorPosition(0, pos.Y * 2);
+		std::cout << strings[pos.Y] << " ";
+	}
+	return pos.Y;
 }

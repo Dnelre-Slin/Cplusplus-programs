@@ -2,27 +2,21 @@
 
 Operators::Operators()
 {
-	key = 0;
 	priority = 0;
-	exp_fix = 0;
+	pow_fix = 0;
 
 	mathFunc = nullptr;
 }
-Operators::Operators(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix)
+Operators::Operators(int start_priority, double(*startMathFunc)(double, double), int start_pow_fix)
 {
-	set(start_key, start_priority, startMathFunc, start_exp_fix);
+	set(start_priority, startMathFunc, start_pow_fix);
 }
-void Operators::set(int start_key, int start_priority, double(*startMathFunc)(double, double), int start_exp_fix)
+void Operators::set(int start_priority, double(*startMathFunc)(double, double), int start_pow_fix)
 {
-	key = start_key;
 	priority = start_priority;
-	exp_fix = start_exp_fix;
+	pow_fix = start_pow_fix;
 
 	mathFunc = startMathFunc;
-}
-int Operators::getKey()
-{
-	return key;
 }
 int Operators::getPriority()
 {
@@ -30,7 +24,7 @@ int Operators::getPriority()
 }
 int Operators::getNextPriority()
 {
-	return priority + exp_fix;
+	return priority + pow_fix;
 }
 double Operators::doOperation(double d1, double d2)
 {
