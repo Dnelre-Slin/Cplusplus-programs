@@ -5,31 +5,45 @@
 #include "BasicMathFuncs.h"
 #include "InputHandler.h"
 
+//Method that parses string and imidietly run calculatorions on it.
+//str holds the math-equation enter by the user. index points at the right place in str. 
+//parantheses_count is used to make sure there are never more end parentheses than start parentheses.
+//lastSymbol is the previous symbol in the string. start_priority is used to handle the priority of differant math operators.
+//If priority of next operator is higher than start_priority, runCalc will be recursivly called. Else, the method will return.
 double Calculator::runCalc(int start_priority, std::string &str, MyConsts &lastSymbol, int &index, int &parantheses_count)
 {
-	double ans = 0, temp_ans = 0;
-	std::string func_name;
-	int stored_index;
-	while (index < str.length())
+    //Ans stores the answer so far calculated in the string. Temp_ans is passed by reference to some methods.
+	double ans = 0, temp_ans = 0; 
+	std::string func_name; //Passed by reference to getName, to check if the string is a legal matematical function name.
+	int stored_index; //Used so that index can jump back, if it goes to far in some cases.
+	while (index < str.length()) //Run while index is inbounds of str.
 	{
-		if (str[index] == '(')
+		if (str[index] == '(') // If current char is start paranthesis.
 		{
-			double multiplier = 1;
-			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))
+			double multiplier = 1; //Used if user enters something like "2(3+4)" to treat the lack of an operator as a multipy.
+			if (priorityReturn(lastSymbol, start_priority, ans, multiplier))//Checks if priority is lower or higher than start_priority.
 				return ans;
-			parantheses_count++;
-			lastSymbol = MyConsts::paranthesis_start;
-			ans = multiplier * runCalc(-1, str, lastSymbol, ++index, parantheses_count);
-			parantheses_count--;
-			index++;
+			parantheses_count++; //One start paranthesis means that paratheses_count should increase.
+			lastSymbol = MyConsts::paranthesis_start; //Set last symbol to parathesis_start.
+			ans = multiplier * runCalc(-1, str, lastSymbol, ++index, parantheses_count); //index increased in call.
+			//Reqursive calls runCalc, with -1 start_priority. This way, it will only return when an end_paranthesis is found.
+			parantheses_count--;//Parantheses_count reduced here, instead of in the ')' condition. Explained below.
+			index++; //Increase index again. Also explained below.
 		}
 		else if ((str[index] == ')') && ((lastSymbol == MyConsts::number) || lastSymbol == MyConsts::factorial || lastSymbol == MyConsts::paranthesis_end))
-		{   //If last element is a number, factorial or an end paranthesis.
-			lastSymbol = MyConsts::paranthesis_end;
+		{   //The current char is an end_paranthesis. lastSymbol must also be number, factorial or an other end paranthesis,
+			//or there will be a syntax error be the user. Something like "(2+3*)" should not be allowed.
+			lastSymbol = MyConsts::paranthesis_end; 
 			if (parantheses_count < 1)
-			{
-				throw std::runtime_error("Syntax Error. (Too many end parantheses.)");
+			{//Throw exception if there are more end parantheses than start parantheses.
+				throw std::runtime_error("Syntax Error. (Too many end parantheses.)"); 
 			}
+			/*Index is not increased in this method. This means that when this method returns, the last call on the stack will also
+			have ')' as the next char. This will cause all call's to return. However, in the start paranthesis condition above, 
+			the index is increased under the recursive call. This will mean that all recursive calls will be returned until the
+			start parantheses is reached. This way, the entire paranthesis expretion will be calculated, and returned as one number.
+			The parantheses_count is also decreased in the start paranthesis method, to ensure that it will only decrease once per
+			end paranthesis.*/
 			return ans;
 		}
 		else if ((str[index] == '!') && ((lastSymbol == MyConsts::number) || (lastSymbol == MyConsts::paranthesis_end))) //If c is '!' and last element is a number or an end parathesis.
