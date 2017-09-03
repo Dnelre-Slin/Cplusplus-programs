@@ -71,7 +71,7 @@ void InputHandler::handleInput(COORD &pos, std::vector<std::string> &vs, int i, 
 		}
 		break;
 	default:
-		if (string_untouched && (i == 43 || i == 45 || i == 42 || i == 47)) // If i is + - * /
+		if (string_untouched && (i == 33 || i == 43 || i == 45 || i == 42 || i == 47 || i == 94)) // If i is ! + - * / ^
 		{
 			vs[pos.Y] = vs[pos.Y].substr(0, pos.X) + "ans" + (char)i + vs[pos.Y].substr(pos.X);
 			pos.X += 4;

@@ -29,7 +29,7 @@ int main()
 	//{
 	//	std::cout << re.what() << '\n';
 	//}
-	system("pause");
+	//system("pause");
 
 	return 0;
 }

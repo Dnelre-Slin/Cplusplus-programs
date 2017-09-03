@@ -9,7 +9,7 @@ namespace MyMath
 	double div(double d1, double d2);
 	double mod(double d1, double d2);
 	double root(double d1, double d2);
-	long long doFactorial(double i1, double stop_nr);
+	double doFactorial(double i1, double stop_nr);
 	void factorialExceptionChecks(double d1, double d2, std::string type);
 	double factorial(double d1);
 	double nPr(double d1, double d2);

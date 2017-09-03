@@ -35,7 +35,7 @@ namespace MyMath
 	{
 		return pow(d1, (1 / root_nr));
 	}
-	long long MyMath::doFactorial(double i1, double stop_nr)
+	double MyMath::doFactorial(double i1, double stop_nr)
 	{
 		if (i1 == stop_nr)
 		{
