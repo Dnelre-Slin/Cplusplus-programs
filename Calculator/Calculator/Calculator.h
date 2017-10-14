@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include <vector>
 #include <unordered_map>
 #include <sstream>
@@ -30,10 +29,8 @@ private:
 	bool		isActualNumber(std::string &str, int &index, double &d);
 	bool		isNumber(std::string &str, int &index, double &d);
 	void		clearWhitespace(std::string &input);
-	//void		calculatorLoop(std::string sInputString, int index);
 	void		initiateCalculation(std::string sInputString, int index);
 public:
 				Calculator();
-	//void		startCalculator();
 	void		calculatorLoop();
 };

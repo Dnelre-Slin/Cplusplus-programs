@@ -111,7 +111,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BasicMathFuncscpp.cpp" />
+    <ClCompile Include="BasicMathFuncs.cpp" />
     <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="CalculatorOld2.cpp" />
     <ClCompile Include="CalculatorOld.cpp" />
