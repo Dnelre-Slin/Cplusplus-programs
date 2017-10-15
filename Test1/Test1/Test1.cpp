@@ -1078,6 +1078,64 @@ void testCin()
 	std::cout << '\n' << s << '\n';
 }
 
+class Bar
+{
+public:
+	void foo() {}
+};
+
+template <typename T>
+using void_t = void;
+
+template <typename T1>
+using my_test_t = decltype(
+	std::declval<T1>()[0]
+);
+
+template <typename T1, typename = void>
+struct is_my_thing : std::false_type
+{
+	is_my_thing()
+	{
+		std::cout << "False\n";
+	}
+};
+
+template <typename T1>
+struct is_my_thing<T1, void_t<my_test_t<T1>>> : std::true_type
+{
+	is_my_thing()
+	{
+		std::cout << "True\n";
+	}
+};
+
+//template<typename T1, typename = std::true_type>
+//void func(T1 value)
+//{
+//	std::cout << "Right\n";
+//}
+//
+//template<typename T1/*, typename decltype(is_my_thing<T1>)*/>
+//typename std::it
+//void func(T1 value)
+//{
+//	std::cout << "Wrong\n";
+//}
+
+void testSFINAE()
+{
+	//Bar b;
+	is_my_thing<Bar> Test;
+	is_my_thing<std::string> Test2;
+
+	std::string s1;
+	Bar b1;
+
+	//func(s1);
+	//func(b1);
+}
+
 int main()
 {
 	//unsigned int y = 1024;
@@ -1101,7 +1159,9 @@ int main()
 
 	//test5();
 
-	testCin();
+	//testCin();
+
+	testSFINAE();
 
 	system("PAUSE");
 	return 0;
