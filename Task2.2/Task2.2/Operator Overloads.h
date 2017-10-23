@@ -1,5 +1,5 @@
 #pragma once
-#include "Polygon.h"
+#include "Polygon2D.h"
 
 // Point overloads
 

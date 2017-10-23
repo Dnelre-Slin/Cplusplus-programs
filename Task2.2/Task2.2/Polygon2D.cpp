@@ -1,4 +1,4 @@
-#include "Polygon.h"
+#include "Polygon2D.h"
 
 void Polygon2D::incSize(unsigned int inc_by)
 {

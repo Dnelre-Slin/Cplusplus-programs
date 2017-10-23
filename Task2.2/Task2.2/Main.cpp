@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Polygon.h"
+#include "Polygon2D.h"
 #include "Operator Overloads.h"
 
 int main()

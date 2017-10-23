@@ -24,7 +24,7 @@
     <ClCompile Include="Line2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Polygon.cpp">
+    <ClCompile Include="Polygon2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +38,10 @@
     <ClInclude Include="Line2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Polygon.h">
+    <ClInclude Include="Operator Overloads.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Operator Overloads.h">
+    <ClInclude Include="Polygon2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
