@@ -23,7 +23,7 @@ int main()
 	Polygon2D polygon4(Point2D(7, 6), line1);
 	std::cout << polygon4 << '\n';
 
-	Polygon2D polygon5 = polygon4, polygon6;
+	Polygon2D polygon5(polygon4), polygon6;
 	polygon6 = polygon1;
 
 	std::cout << polygon5 << '\n' << polygon6 << '\n';
@@ -34,6 +34,14 @@ int main()
 	polygon7 += polygon6;
 
 	std::cout << polygon7 << '\n';
+
+	Polygon2D polygon8(polygon1, polygon2);
+	Polygon2D polygon9(point1, polygon3);
+	Polygon2D polygon10(line1, polygon4);
+
+	std::cout << "\n\n\n";
+
+	std::cout << polygon8 << '\n' << polygon9 << '\n' << polygon10 << '\n';
 
 	system("pause");
 	return 0;

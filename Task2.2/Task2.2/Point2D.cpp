@@ -1,10 +1,8 @@
 #include "Point2D.h"
 
 Point2D::Point2D(){}
-Point2D::Point2D(int x, int y) :
-	m_coords(x,y) {}
-Point2D::Point2D(const Coord2D &coords) :
-	m_coords(coords) {}
+Point2D::Point2D(int x, int y) : m_coords(x,y) {}
+Point2D::Point2D(const Coord2D &coords) : m_coords(coords) {}
 
 void Point2D::set(int x, int y)
 {
