@@ -28,4 +28,8 @@ Coord2D &Point2D::at() //Get reference to coords.
 	return m_coords;
 }
 
-
+std::ostream& operator<<(std::ostream &s, const Point2D& point)
+{
+	s << '(' << point.get().x << ',' << point.get().y << ')';
+	return s;
+}

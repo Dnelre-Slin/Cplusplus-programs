@@ -27,3 +27,13 @@ Point2D & Line2D::at(int index)
 	return operator[](index);
 }
 
+Line2D operator+(const Point2D &point1, const Point2D &point2)
+{
+	return Line2D(point1, point2);
+}
+
+std::ostream& operator<<(std::ostream& s, const Line2D& line)
+{
+	s << '[' << line.get(0) << ',' << line.get(1) << ']';
+	return s;
+}

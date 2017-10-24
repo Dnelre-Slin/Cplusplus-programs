@@ -37,9 +37,21 @@ public:
 	Point2D &at(unsigned int index);
 
 	Polygon2D &operator+=(const Point2D &point);
+	Polygon2D operator+(const Point2D &point) const;
 	Polygon2D &operator+=(const Line2D &line);
+	Polygon2D operator+(const Line2D &line) const;
 	Polygon2D &operator+=(const Polygon2D &polygon);
+	Polygon2D operator+(const Polygon2D &polygon) const;
 
 	unsigned int size() const;
+
+
+	friend Polygon2D operator+(const Point2D &point, const Polygon2D &polygon);
+	friend Polygon2D operator+(const Line2D &line, const Polygon2D &polygon);
+
+	friend Polygon2D operator+(const Point2D &point, const Line2D &line);
+	friend Polygon2D operator+(const Line2D &line, const Point2D &point);
+
+	friend std::ostream &operator<<(std::ostream &os, const Polygon2D &polygon);
 
 };

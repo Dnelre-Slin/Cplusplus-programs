@@ -16,4 +16,6 @@ public:
 	const Coord2D &get() const;
 	Coord2D &at();
 
+	friend std::ostream &operator<<(std::ostream &os, const Point2D &point);
+
 };

@@ -169,12 +169,22 @@ Polygon2D &Polygon2D::operator+=(const Point2D &point)
 	return *this;
 }
 
+Polygon2D Polygon2D::operator+(const Point2D &point) const
+{
+	return Polygon2D(*this) += point;
+}
+
 Polygon2D &Polygon2D::operator+=(const Line2D &line)
 {
 	incSize(2);
 	m_points[m_size - 2] = line.get(0);
 	m_points[m_size - 1] = line.get(1);
 	return *this;
+}
+
+Polygon2D Polygon2D::operator+(const Line2D &line) const
+{
+	return Polygon2D(*this) += line;
 }
 
 Polygon2D &Polygon2D::operator+=(const Polygon2D &polygon)
@@ -190,8 +200,43 @@ Polygon2D &Polygon2D::operator+=(const Polygon2D &polygon)
 	return *this;
 }
 
+Polygon2D Polygon2D::operator+(const Polygon2D &polygon) const
+{
+	return Polygon2D(*this) += polygon;
+}
+
 unsigned int Polygon2D::size() const
 {
 	return m_size;
 }
 
+Polygon2D operator+(const Point2D &point, const Line2D &line)
+{
+	return Polygon2D(point, line);
+}
+Polygon2D operator+(const Line2D &line, const Point2D &point)
+{
+	return point + line;
+}
+
+Polygon2D operator+(const Point2D &point, const Polygon2D &polygon)
+{
+	return Polygon2D(point, polygon);
+}
+
+Polygon2D operator+(const Line2D &line, const Polygon2D &polygon)
+{
+	return Polygon2D(line, polygon);
+}
+
+std::ostream &operator<<(std::ostream &s, const Polygon2D &polygon)
+{
+	s << '{';
+	for (unsigned int i = 0; i < polygon.size() - 1; i++)
+	{
+		s << polygon.get(i) << ',';
+	}
+	s << polygon.get(polygon.size() - 1);
+	s << '}';
+	return s;
+}
