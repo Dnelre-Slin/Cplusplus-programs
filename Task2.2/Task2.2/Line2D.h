@@ -16,6 +16,8 @@ public:
 	Point2D &operator[](int index);
 	Point2D &at(int index);
 
+	double getLineLength() const;
+	const Point2D &getOtherPoint(const Point2D &point) const;
 	friend Line2D operator+(const Point2D &point1, const Point2D &point2);
 	friend std::ostream &operator<<(std::ostream &os, const Line2D &line);
 };

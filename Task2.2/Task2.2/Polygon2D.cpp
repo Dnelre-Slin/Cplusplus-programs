@@ -11,15 +11,15 @@ void Polygon2D::incSize(unsigned int inc_by)
 void Polygon2D::resize()
 {
 	unsigned int new_max = m_size * 2;
-	Point2D *temp_arr = new Point2D[new_max];
+	Line2D *temp_arr = new Line2D[new_max];
 
 	for (unsigned int i = 0; i < m_max_size; i++)
 	{
-		temp_arr[i] = m_points[i];
+		temp_arr[i] = m_lines[i];
 	}
 
-	delete[] m_points;
-	m_points = temp_arr;
+	delete[] m_lines;
+	m_lines = temp_arr;
 	m_max_size = new_max;
 }
 
@@ -29,6 +29,25 @@ void Polygon2D::checkClosed() const
 		throw std::runtime_error("Polygon is closed and cannot be added to.");
 }
 
+Line2D Polygon2D::makeLineBetweenClosestPoints(const Point2D &check_point, const Point2D &option1_point, const Point2D &option2_point) const
+{
+	if (check_point.distanceBetweenPoints(option1_point) < check_point.distanceBetweenPoints(option2_point))
+		return Line2D(check_point, option1_point);
+	else
+		return Line2D(check_point, option2_point);
+}
+
+Line2D Polygon2D::makeLineBetweenClosestPoints(const Line2D &check_line, const Line2D &option_line) const
+{
+	Line2D short_line1 = makeLineBetweenClosestPoints(check_line.get(0), option_line.get(0), option_line.get(0));
+	Line2D short_line2 = makeLineBetweenClosestPoints(check_line.get(1), option_line.get(0), option_line.get(0));
+	if (short_line1.getLineLength() < short_line2.getLineLength())
+		return short_line1;
+	else
+		return short_line2;
+}
+
+
 // Public:
 
 Polygon2D::Polygon2D()
@@ -36,54 +55,58 @@ Polygon2D::Polygon2D()
 	m_size = 0;
 	m_max_size = 10;
 	m_is_closed = false;
-	m_points = new Point2D[m_max_size];
+	m_lines = new Line2D[m_max_size];
+	m_start_point = m_end_point = 0;
 }
 Polygon2D::Polygon2D(const Polygon2D &polygon)
 {
-	m_points = 0;
+	m_lines = 0;
 	*this = polygon;
 }
 Polygon2D::Polygon2D(const Point2D &point1, const Point2D &point2, const Point2D &point3)
 {
-	m_points = 0;
+	m_lines = 0;
 	set(point1, point2, point3);
 }
 Polygon2D::Polygon2D(const Point2D &point, const Line2D &line)
 {
-	m_points = 0;
+	m_lines = 0;
 	set(point, line);
 }
 Polygon2D::Polygon2D(const Point2D &point, const Polygon2D &polygon)
 {
-	m_points = 0;
+	m_lines = 0;
 	set(point, polygon);
 }
 Polygon2D::Polygon2D(const Line2D &line, const Polygon2D &polygon)
 {
-	m_points = 0;
+	m_lines = 0;
 	set(line, polygon);
 }
 Polygon2D::Polygon2D(const Polygon2D &polygon1, const Polygon2D &polygon2)
 {
-	m_points = 0;
+	m_lines = 0;
 	set(polygon1, polygon2);
 }
 
 Polygon2D::~Polygon2D()
 {
-	delete[] m_points;
+	delete[] m_lines;
 }
 
 Polygon2D &Polygon2D::operator=(const Polygon2D &polygon)
 {
-	delete[] m_points;
+	delete[] m_lines;
 	m_max_size = polygon.m_max_size;
 	m_size = polygon.m_size;
 	m_is_closed = polygon.m_is_closed;
-	m_points = new Point2D[m_max_size];
+	m_start_point = polygon.m_start_point;
+	m_end_point = polygon.m_end_point;
+
+	m_lines = new Line2D[m_max_size];
 	for (unsigned int i = 0; i < m_size; i++)
 	{
-		m_points[i] = polygon.m_points[i];
+		m_lines[i] = polygon.m_lines[i];
 	}
 	return *this;
 }
@@ -94,15 +117,17 @@ void Polygon2D::set(const Polygon2D &polygon)
 }
 void Polygon2D::set(const Point2D &point, const Line2D &line)
 {
-	delete[] m_points;
-	m_size = 3;
+	delete[] m_lines;
+	m_size = 0;
 	m_max_size = 10;
 	m_is_closed = false;
 
-	m_points = new Point2D[m_max_size];
-	m_points[0] = point;
-	m_points[1] = line.get(0);
-	m_points[2] = line.get(1);
+	m_lines = new Line2D[m_max_size];
+	m_lines[m_size++] = makeLineBetweenClosestPoints(point, line.get(0), line.get(1));
+	m_lines[m_size++] = line;
+
+	m_start_point = &point;
+	m_end_point = &m_lines[m_size - 2].getOtherPoint(point);
 }
 void Polygon2D::set(const Point2D &point1, const Point2D &point2, const Point2D &point3)
 {
@@ -130,12 +155,11 @@ Polygon2D &Polygon2D::operator+=(const Point2D &point)
 	checkClosed();
 
 	incSize(1);
-	m_points[m_size - 1] = point;
+	m_lines[m_size - 1] = makeLineBetweenClosestPoints(point, *m_start_point, *m_end_point);
 	return *this;
 }
 Polygon2D Polygon2D::operator+(const Point2D &point) const
 {
-	checkClosed();
 	return Polygon2D(*this) += point;
 }
 
@@ -144,13 +168,12 @@ Polygon2D &Polygon2D::operator+=(const Line2D &line)
 	checkClosed();
 
 	incSize(2);
-	m_points[m_size - 2] = line.get(0);
-	m_points[m_size - 1] = line.get(1);
+	m_lines[m_size - 2] = makeLineBetweenClosestPoints(line, Line2D(*m_start_point, *m_end_point));
+	m_lines[m_size - 1] = line;
 	return *this;
 }
 Polygon2D Polygon2D::operator+(const Line2D &line) const
 {
-	checkClosed();
 	return Polygon2D(*this) += line;
 }
 
@@ -163,26 +186,23 @@ Polygon2D &Polygon2D::operator+=(const Polygon2D &polygon)
 
 	for (unsigned int i = 0; i < polygon.size(); i++)
 	{
-		m_points[i + old_size] = polygon.get(i);
+		m_lines[i + old_size] = polygon.get(i);
 	}
 	
 	return *this;
 }
 Polygon2D Polygon2D::operator+(const Polygon2D &polygon) const
 {
-	checkClosed();
 	return Polygon2D(*this) += polygon;
 }
 
 
 Polygon2D operator+(const Point2D &point, const Polygon2D &polygon)
 {
-	polygon.checkClosed();
 	return polygon + point;
 }
 Polygon2D operator+(const Line2D &line, const Polygon2D &polygon)
 {
-	polygon.checkClosed();
 	return polygon + line;
 }
 

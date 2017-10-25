@@ -16,6 +16,10 @@ public:
 	const Coord2D &get() const;
 	Coord2D &at();
 
+	double distanceBetweenPoints(const Point2D &other_point) const;
+
+	bool operator==(const Point2D &other_point) const;
+
 	friend std::ostream &operator<<(std::ostream &os, const Point2D &point);
 
 };

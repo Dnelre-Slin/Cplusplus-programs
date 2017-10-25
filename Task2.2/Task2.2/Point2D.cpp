@@ -26,6 +26,18 @@ Coord2D &Point2D::at() //Get reference to coords.
 	return m_coords;
 }
 
+double Point2D::distanceBetweenPoints(const Point2D &other_point) const
+{
+	return sqrt(pow((double)(this->m_coords.y - other_point.m_coords.y), 2.0) + pow((double)(this->m_coords.x - other_point.m_coords.x),2.0)); //Pythagoras Theorem.
+}
+
+bool Point2D::operator==(const Point2D &other_point) const
+{
+	if (this->m_coords.x == other_point.m_coords.x && this->m_coords.y == other_point.m_coords.y)
+		return true;
+	return false;
+}
+
 std::ostream& operator<<(std::ostream &s, const Point2D& point)
 {
 	s << '(' << point.get().x << ',' << point.get().y << ')';
