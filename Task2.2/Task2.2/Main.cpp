@@ -1,8 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
-#include "Polygon.h"
+//#include "Polygon.h"
 //#include "Operator Overloads.h"
+#include "GraphicsLibrary.h"
 
 // Testing function.
 //Get a random point.
@@ -167,6 +168,50 @@ void TestAxisMismatchException()
 	}
 }
 
+//Function for testing operator overloads.
+void TestOperatorOverloads()
+{
+	Point p1 = getRndPoint(2);
+	Point p2 = getRndPoint(2);
+
+	Line l1 = p1 + p2; // Add two points to get line.
+	std::cout << "Add two points. Get a line.\n";
+	std::cout << p1 << " + " << p2 << " = " << l1 << "\n\n";
+
+	Line l2 = getRndLine(2);
+
+	Polygon poly1 = l1 + l2; // Add to lines to get polygon.
+	std::cout << "Add two lines. Get a polygon.\n";
+	std::cout << l1 << " + " << l2 << " = " << poly1 << "\n\n";
+
+	Point p3 = getRndPoint(3);
+	Line l3 = getRndLine(3);
+
+	Polygon poly2 = p3 + l3; // Add point and line to get polygon.
+	std::cout << "Add point and line. Get a polygon.\n";
+	std::cout << p3 << " + " << l3 << " = " << poly2 << "\n\n";
+
+	Point p4 = getRndPoint(3);
+	Polygon poly3 = getRndPolygon(3, 1);
+	
+	Polygon poly4 = poly3 + p4; // Add polygon and point to get polygon.
+	std::cout << "Add polygon and point. Get a polygon.\n";
+	std::cout << poly3 << " + " << p4 << " = " << poly4 << "\n\n";
+
+	Polygon poly5 = getRndPolygon(2, 1);
+	Line l4 = getRndLine(2);
+
+	Polygon poly6 = l4 + poly5; // Add line and polygon to get polygon.
+	std::cout << "Add line and polygon. Get a polygon.\n";
+	std::cout << l4 << " + " << poly5 << " = " << poly6 << "\n\n";
+
+	Polygon poly7 = getRndPolygon(2, 1);
+	Polygon poly8 = getRndPolygon(2, 1);
+	Polygon poly9 = poly7 + poly8; // Add two polygons to get a polygon.
+	std::cout << "Add two polygons. Get a polygon.\n";
+	std::cout << poly7 << " + " << poly8 << " = " << poly9 << "\n\n";
+}
+
 // Function to test if writing and reading points, lines and polygons to files works as intended.
 void TestFileWritingAndReading()
 {
@@ -261,6 +306,7 @@ int main()
 	//TestSimplePolygonFunctionality();
 	//TestPolygonRemoveRedundantPointFunctionality();
 	//TestAxisMismatchException();
+	TestOperatorOverloads();
 	//TestFileWritingAndReading();
 
 	system("pause");

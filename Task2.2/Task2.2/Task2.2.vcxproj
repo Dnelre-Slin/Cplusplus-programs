@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Coords.h" />
+    <ClInclude Include="GraphicsLibrary.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Operator Overloads.h" />
     <ClInclude Include="Point.h" />

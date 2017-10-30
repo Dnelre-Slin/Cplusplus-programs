@@ -47,6 +47,8 @@ bool Point::isAxisCompatible(const Point &other_point) const //Checks if this po
 
 bool Point::operator==(const Point &other_point) const
 {
+	if (!isAxisCompatible(other_point)) //Return false immediately, if points are of different dimensions.
+		return false;
 	for (unsigned int i = 0; i < m_nrOfAxis; i++)
 	{
 		if (m_coords[i] != other_point.m_coords[i])
