@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{5B358F05-6CF3-4104-B2B5-FDBC23EFD532}</ProjectGuid>
-    <RootNamespace>Task22</RootNamespace>
+    <ProjectGuid>{07B8CC59-0326-41B9-80DC-29241873DD7A}</ProjectGuid>
+    <RootNamespace>Task23</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -111,19 +111,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Line.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Point.cpp" />
-    <ClCompile Include="Polygon.cpp" />
-    <ClCompile Include="Polygon2DNew.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Coords.h" />
-    <ClInclude Include="Line.h" />
-    <ClInclude Include="Operator Overloads.h" />
     <ClInclude Include="Point.h" />
-    <ClInclude Include="Polygon.h" />
-    <ClInclude Include="Polygon2DNew.h" />
+    <ClInclude Include="Point2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
