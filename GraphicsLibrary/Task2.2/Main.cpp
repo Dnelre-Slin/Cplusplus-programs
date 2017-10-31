@@ -85,7 +85,7 @@ bool checkRedundantPointInPolygon(const Polygon &polygon)
 	{
 		for (unsigned int j = i + 1; j < polygon.size(); j++)
 		{
-			if (polygon[i] == polygon[j])
+			if (polygon.get(i) == polygon.get(j))
 			{
 				return false;
 			}
@@ -302,12 +302,12 @@ int main()
 {
 	srand(time(NULL)); //rand() used for some of the function. Set seed here.
 
-	//TestPointAxisRestraint();
-	//TestSimplePolygonFunctionality();
-	//TestPolygonRemoveRedundantPointFunctionality();
-	//TestAxisMismatchException();
+	TestPointAxisRestraint();
+	TestSimplePolygonFunctionality();
+	TestPolygonRemoveRedundantPointFunctionality();
+	TestAxisMismatchException();
 	TestOperatorOverloads();
-	//TestFileWritingAndReading();
+	TestFileWritingAndReading();
 
 	system("pause");
 	return 0;

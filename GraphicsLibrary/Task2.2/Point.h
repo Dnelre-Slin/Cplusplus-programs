@@ -26,6 +26,8 @@ public:
 
 	inline bool unset() { return m_unset; } //Returns whether point is unset. If so, it is not safe to use.
 
+	int &operator[](unsigned int index);
+
 	bool operator==(const Point &other_point) const;
 	bool operator!=(const Point &other_point) const;
 

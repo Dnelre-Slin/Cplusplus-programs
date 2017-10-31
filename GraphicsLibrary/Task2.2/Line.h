@@ -14,8 +14,8 @@ public:
 
 	void set(const Point &point1, const Point &point2);
 	
-	inline const Point &operator[](int index) const { return m_points[index]; }
-	inline const Point &get(int index) const { return operator[](index); }
+	Point &operator[](int index);
+	const Point &get(int index) const;
 
 	inline bool unset() { return m_unset; } // Return whether line is unset. If so, it is unsafe to use.
 

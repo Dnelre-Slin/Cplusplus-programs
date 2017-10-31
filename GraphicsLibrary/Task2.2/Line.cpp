@@ -14,6 +14,23 @@ void Line::set(const Point &point1, const Point &point2) //Sets line.
 	m_unset = false; // Line is no longer unset, and can be used safely.
 }
 
+inline Point &Line::operator[](int index) //Get referance to points. Can modify points outside class using this method.
+{
+	if (m_unset) // Must be set.
+		throw std::runtime_error("Cannot modify unset line.");
+	if (index < 2) // Limit to two points. Anything else is out of bounds.
+		return m_points[index];
+	throw std::runtime_error("Index out of bounds.");
+}
+
+inline const Point & Line::get(int index) const // Same as above, but can be used by const objets. Obviously cannot modify points using this const method.
+{
+	//Can be used when unset, but not safe.
+	if (index < 2)
+		return m_points[index];
+	throw std::runtime_error("Index out of bounds.");
+}
+
 bool Line::operator==(const Line &other) const
 {
 	if (m_points[0] == other.m_points[0] && m_points[1] == other.m_points[1]) // If first points and second points are equal, line is equal.

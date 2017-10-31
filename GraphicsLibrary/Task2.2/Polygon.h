@@ -38,8 +38,8 @@ public:
 	void set(const Line &line, const Polygon &polygon);
 	void set(const Polygon &polygon1, const Polygon &polygon2);
 
-	inline const Point &get(unsigned int index) const { return m_points[index]; }
-	inline const Point &operator[](unsigned int index) const { return m_points[index]; }
+	inline const Point &get(unsigned int index) const { return m_points[index]; } //Vector class handles out of bounds exceptions.
+	inline Point &operator[](unsigned int index) { return m_points[index]; } //Vector class handles out of bounds exceptions.
 	inline unsigned int size() const { return m_size; }
 
 	bool operator==(const Polygon &other) const;

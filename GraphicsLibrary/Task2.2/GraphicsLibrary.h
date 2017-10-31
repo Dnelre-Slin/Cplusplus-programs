@@ -4,6 +4,6 @@
 #include "Line.h"
 #include "Polygon.h"
 
-#include "Point.cpp"
-#include "Line.cpp"
-#include "Polygon.cpp"
+//#include "Point.cpp"
+//#include "Line.cpp"
+//#include "Polygon.cpp"

@@ -130,17 +130,17 @@ void Polygon::set(const Point &point, const Line &line) // Makes polygon from po
 
 	if (point == line.get(0) || point == line.get(1)) //Check if any points are similar.
 		throw std::runtime_error("Polygon can not consist of two or more similar points.");
-	checkAxisCompatibility(line[0]); //And check if they are all of the same dimension.
+	checkAxisCompatibility(line.get(0)); //And check if they are all of the same dimension.
 
 	m_points = new Point[m_max_size]; // Allocate place for a new array.
 	m_points[m_size++] = point; //Put point and points in line into m_points array.
-	m_points[m_size++] = line[0]; //m_size can be increased directly, since we know that size will end up as 3, and max_size is 10.
-	m_points[m_size++] = line[1];
+	m_points[m_size++] = line.get(0); //m_size can be increased directly, since we know that size will end up as 3, and max_size is 10.
+	m_points[m_size++] = line.get(1);
 }
 void Polygon::set(const Line &line1, const Line &line2) //The rest of the set-methods, use their respective + or += operators.
 {
-	*this = line1[0] + line2;
-	*this += line1[1];
+	*this = line1.get(0) + line2;
+	*this += line1.get(1);
 }
 void Polygon::set(const Point &point1, const Point &point2, const Point &point3)
 {
@@ -186,7 +186,7 @@ Polygon Polygon::operator+(const Point &point) const
 
 Polygon &Polygon::operator+=(const Line &line) //Add line to polygon.
 {
-	checkAxisCompatibility(line[0]); //Only need to check if one of the points in line, is axis compatible, since both points in line must be of same axis nr.
+	checkAxisCompatibility(line.get(0)); //Only need to check if one of the points in line, is axis compatible, since both points in line must be of same axis nr.
 	//Individually add each point in line, if it is not already in polygon.
 	if (!checkIfPointAlreadyInPolygon(line.get(0)))
 	{

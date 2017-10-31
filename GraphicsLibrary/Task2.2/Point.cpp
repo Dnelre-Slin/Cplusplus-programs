@@ -45,6 +45,15 @@ bool Point::isAxisCompatible(const Point &other_point) const //Checks if this po
 	return false;
 }
 
+int &Point::operator[](unsigned int index) //Get reference to coordinates. This method can be used to change coordinates outside of class, without using set-methods.
+{
+	if (m_unset) //Only works on set points.
+		throw std::runtime_error("Cannot modify unset point.");
+	if (index < m_nrOfAxis) //Check if index is in bounds.
+		return m_coords[index];
+	throw std::runtime_error("Index out of bounds.");
+}
+
 bool Point::operator==(const Point &other_point) const
 {
 	if (!isAxisCompatible(other_point)) //Return false immediately, if points are of different dimensions.
