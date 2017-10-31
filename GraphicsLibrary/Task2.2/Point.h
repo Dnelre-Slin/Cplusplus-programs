@@ -22,7 +22,7 @@ public:
 	inline const std::vector<int> &get() const { return m_coords; }
 
 	bool isAxisCompatible(const Point &other_point) const;
-	int nrOfAxis() const { return m_nrOfAxis; }
+	unsigned int nrOfAxis() const { return m_nrOfAxis; }
 
 	inline bool unset() { return m_unset; } //Returns whether point is unset. If so, it is not safe to use.
 

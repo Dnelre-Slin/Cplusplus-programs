@@ -134,8 +134,8 @@ void Polygon::set(const Point &point, const Line &line) // Makes polygon from po
 
 	m_points = new Point[m_max_size]; // Allocate place for a new array.
 	m_points[m_size++] = point; //Put point and points in line into m_points array.
-	m_points[m_size++] = line.get(0); //m_size can be increased directly, since we know that size will end up as 3, and max_size is 10.
-	m_points[m_size++] = line.get(1);
+	m_points[m_size++] = line[0]; //m_size can be increased directly, since we know that size will end up as 3, and max_size is 10.
+	m_points[m_size++] = line[1];
 }
 void Polygon::set(const Line &line1, const Line &line2) //The rest of the set-methods, use their respective + or += operators.
 {
